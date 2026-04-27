@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>용해와 용액 탐구 앱</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #64748b;
+      --line: #94a3b8;
+      --header: #dfead7;
+      --accent: #dbeafe;
+      --accent-text: #1d4ed8;
+      --pastel-1: #bfd7ff;
+      --pastel-2: #ffc9d2;
+      --pastel-3: #ffe4b5;
+      --pastel-4: #cdeccf;
+      --pastel-5: #ffd8b8;
+      --pastel-6: #cdeff6;
+      --pastel-7: #e0f0c2;
+      --pastel-8: #ddd1ff;
+      --pastel-9: #f7d1e8;
+      --pastel-10: #cdefe7;
+      --pastel-11: #d6dbff;
+      --pastel-12: #e9d2fa;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .hero, .card {
+      background: var(--card);
+      border-radius: 24px;
+      box-shadow: 0 1px 3px rgba(15,23,42,0.08);
+    }
+    .hero {
+      padding: 24px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: end;
+      flex-wrap: wrap;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: var(--accent-text);
+      font-size: 14px;
+      font-weight: 700;
+    }
+    h1 {
+      margin: 10px 0 6px;
+      font-size: 32px;
+      line-height: 1.2;
+    }
+    .sub {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    button {
+      border: 1px solid #cbd5e1;
+      background: white;
+      color: var(--text);
+      border-radius: 16px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    button:hover { background: #f8fafc; }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: white;
+      border-radius: 18px;
+      padding: 6px;
+      margin-top: 18px;
+      box-shadow: 0 1px 3px rgba(15,23,42,0.08);
+    }
+    .tab-btn {
+      border: 0;
+      background: transparent;
+      padding: 12px;
+      border-radius: 14px;
+      font-size: 16px;
+    }
+    .tab-btn.active {
+      background: #eef2ff;
+      color: #3730a3;
+      font-weight: 800;
+    }
+    .page { margin-top: 18px; }
+    .page[hidden] { display: none !important; }
+    .page.active { display: block; }
+
+    .section-grid {
+      display: grid;
+      gap: 18px;
+    }
+    .card {
+      padding: 20px;
+    }
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+    }
+    table {
+      width: 100%;
+      min-width: 980px;
+      border-collapse: collapse;
+      text-align: center;
+      font-size: 14px;
+      background: white;
+    }
+    thead th {
+      background: var(--header);
+      font-weight: 700;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 6px;
+    }
+    tbody th {
+      background: #fff;
+      font-size: 18px;
+      min-width: 90px;
+    }
+    select {
+      width: 58px;
+      height: 32px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .label-block label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .label-block input {
+      width: 220px;
+      height: 40px;
+      border-radius: 12px;
+      border: 1px solid #cbd5e1;
+      padding: 0 12px;
+      font-size: 15px;
+      background: white;
+    }
+
+    .chart-box {
+      margin-top: 18px;
+    }
+    .chart-title {
+      font-size: 28px;
+      font-weight: 800;
+      margin: 0 0 8px;
+    }
+    .chart-sub {
+      margin: 0 0 18px;
+      color: var(--muted);
+    }
+    .svg-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 18px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      padding: 10px;
+    }
+
+    .legend-title {
+      margin: 18px 0 10px;
+      font-size: 20px;
+      font-weight: 800;
+    }
+    .legend-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: #fff;
+      padding: 10px 12px;
+      font-size: 14px;
+    }
+    .swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1px solid rgba(0,0,0,0.08);
+      flex: none;
+    }
+    .count-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .count-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      background: #f8fafc;
+      text-align: center;
+      padding: 16px;
+    }
+    .count-card .name {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .count-card .num {
+      margin-top: 8px;
+      font-size: 34px;
+      font-weight: 800;
+    }
+    .count-card .unit {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .tooltip {
+      position: fixed;
+      z-index: 50;
+      pointer-events: none;
+      background: white;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(15,23,42,0.12);
+      padding: 10px 12px;
+      font-size: 13px;
+      color: var(--text);
+      display: none;
+      max-width: 220px;
+    }
+    .tooltip .tt-title { font-weight: 800; margin-bottom: 6px; }
+    .tooltip .tt-body { color: var(--muted); line-height: 1.4; }
+
+    @media (max-width: 900px) {
+      h1 { font-size: 26px; }
+      .card h2, .chart-title { font-size: 24px; }
+      .legend-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .count-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <div class="badge">🧪 용해와 용액 탐구 앱</div>
+        <h1>용질이 얼마나 녹을까?</h1>
+        <p class="sub">표의 기본값은 비어 있습니다. O 또는 X를 선택하면 그래프가 바로 바뀝니다.</p>
+      </div>
+      <div class="btn-row">
+        <button id="resetPage1">↺ 1페이지 초기화</button>
+        <button id="resetPage2">↺ 2페이지 초기화</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="page1">1페이지 · 용질의 종류 비교</button>
+      <button class="tab-btn" data-tab="page2">2페이지 · 물의 온도 비교</button>
+    </div>
+
+    <section id="page1" class="page active section-grid">
+      <div class="card">
+        <h2>설탕 · 소금 · 백반 비교</h2>
+        <p>같은 양의 물에 한 스푼씩 넣었을 때, 녹으면 O, 녹지 않으면 X를 선택합니다.</p>
+        <div class="table-wrap">
+          <table id="kindTable"></table>
+        </div>
+      </div>
+
+      <div class="card chart-box">
+        <div class="chart-title">용질에 따른 용해 횟수</div>
+        <p class="chart-sub">회차마다 다른 파스텔 색으로 표시한 누적 막대그래프입니다.</p>
+        <div class="svg-wrap">
+          <svg id="kindChart" width="1000" height="430" aria-label="용질에 따른 용해 횟수 그래프"></svg>
+        </div>
+        <div class="count-grid" id="kindCounts"></div>
+        <div class="legend-title">회차 색상 범례</div>
+        <div class="legend-grid" id="legendGrid1"></div>
+      </div>
+    </section>
+
+    <section id="page2" class="page section-grid" hidden>
+      <div class="card">
+        <div class="top-row">
+          <div>
+            <h2 style="margin-bottom:8px;">물의 온도에 따른 용해 비교</h2>
+            <p>차가운 물, 실온, 따뜻한 물에 넣었을 때 녹는 정도를 O/X로 비교합니다.</p>
+          </div>
+          <div class="label-block">
+            <label for="soluteName">비교할 용질 이름</label>
+            <input id="soluteName" value="백반" />
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table id="tempTable"></table>
+        </div>
+      </div>
+
+      <div class="card chart-box">
+        <div class="chart-title">온도에 따른 용해 횟수</div>
+        <p class="chart-sub" id="tempChartSub">1페이지와 다른 형태의 가로 누적 막대그래프입니다. 백반의 온도별 용해 횟수를 확인할 수 있습니다.</p>
+        <div class="svg-wrap">
+          <svg id="tempChart" width="1000" height="430" aria-label="온도에 따른 용해 횟수 그래프"></svg>
+        </div>
+        <div class="count-grid" id="tempCounts"></div>
+        <div class="legend-title">회차 색상 범례</div>
+        <div class="legend-grid" id="legendGrid2"></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="tooltip" id="tooltip"></div>
+
+  <script>
+    const SPOONS = Array.from({ length: 12 }, (_, i) => i + 1);
+    const SOLUTES = ["설탕", "소금", "백반"];
+    const TEMPS = ["차가운 물", "실온", "따뜻한 물"];
+    const SPOON_COLORS = [
+      "#BFD7FF", "#FFC9D2", "#FFE4B5", "#CDECCF",
+      "#FFD8B8", "#CDEFF6", "#E0F0C2", "#DDD1FF",
+      "#F7D1E8", "#CDEFE7", "#D6DBFF", "#E9D2FA"
+    ];
+
+    function makeBlankKindRows() {
+      return SPOONS.map(spoon => ({ spoon, 설탕: null, 소금: null, 백반: null }));
+    }
+    function makeBlankTempRows() {
+      return SPOONS.map(spoon => ({ spoon, "차가운 물": null, 실온: null, "따뜻한 물": null }));
+    }
+
+    let kindRows = makeBlankKindRows();
+    let tempRows = makeBlankTempRows();
+
+    const kindTable = document.getElementById('kindTable');
+    const tempTable = document.getElementById('tempTable');
+    const kindChart = document.getElementById('kindChart');
+    const tempChart = document.getElementById('tempChart');
+    const kindCounts = document.getElementById('kindCounts');
+    const tempCounts = document.getElementById('tempCounts');
+    const legendGrid1 = document.getElementById('legendGrid1');
+    const legendGrid2 = document.getElementById('legendGrid2');
+    const tooltip = document.getElementById('tooltip');
+    const soluteNameInput = document.getElementById('soluteName');
+    const tempChartSub = document.getElementById('tempChartSub');
+
+    function selectHTML(value) {
+      return `
+        <select>
+          <option value="" ${value === null ? 'selected' : ''}></option>
+          <option value="O" ${value === true ? 'selected' : ''}>O</option>
+          <option value="X" ${value === false ? 'selected' : ''}>X</option>
+        </select>
+      `;
+    }
+
+    function renderKindTable() {
+      let html = '<thead><tr><th>용질</th>';
+      for (const spoon of SPOONS) html += `<th>${spoon}회</th>`;
+      html += '</tr></thead><tbody>';
+      for (const solute of SOLUTES) {
+        html += `<tr><th>${solute}</th>`;
+        for (let i = 0; i < kindRows.length; i++) {
+          html += `<td data-type="kind" data-row="${i}" data-key="${solute}">${selectHTML(kindRows[i][solute])}</td>`;
+        }
+        html += '</tr>';
+      }
+      html += '</tbody>';
+      kindTable.innerHTML = html;
+      kindTable.querySelectorAll('td[data-type="kind"] select').forEach(select => {
+        select.addEventListener('change', (e) => {
+          const td = e.target.closest('td');
+          const row = Number(td.dataset.row);
+          const key = td.dataset.key;
+          const v = e.target.value;
+          kindRows[row][key] = v === '' ? null : v === 'O';
+          renderAll();
+        });
+      });
+    }
+
+    function renderTempTable() {
+      let html = '<thead><tr><th>온도</th>';
+      for (const spoon of SPOONS) html += `<th>${spoon}회</th>`;
+      html += '</tr></thead><tbody>';
+      for (const temp of TEMPS) {
+        html += `<tr><th>${temp}</th>`;
+        for (let i = 0; i < tempRows.length; i++) {
+          html += `<td data-type="temp" data-row="${i}" data-key="${temp}">${selectHTML(tempRows[i][temp])}</td>`;
+        }
+        html += '</tr>';
+      }
+      html += '</tbody>';
+      tempTable.innerHTML = html;
+      tempTable.querySelectorAll('td[data-type="temp"] select').forEach(select => {
+        select.addEventListener('change', (e) => {
+          const td = e.target.closest('td');
+          const row = Number(td.dataset.row);
+          const key = td.dataset.key;
+          const v = e.target.value;
+          tempRows[row][key] = v === '' ? null : v === 'O';
+          renderAll();
+        });
+      });
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function showTooltip(evt, title, items) {
+      tooltip.style.display = 'block';
+      tooltip.innerHTML = `<div class="tt-title">${escapeHtml(title)}</div><div class="tt-body">${items}</div>`;
+      const x = evt.clientX + 14;
+      const y = evt.clientY + 14;
+      tooltip.style.left = x + 'px';
+      tooltip.style.top = y + 'px';
+    }
+    function hideTooltip() { tooltip.style.display = 'none'; }
+
+    function attachRectTooltip(rect, title, bodyHtml) {
+      rect.addEventListener('mousemove', (evt) => showTooltip(evt, title, bodyHtml));
+      rect.addEventListener('mouseleave', hideTooltip);
+    }
+
+    function renderVerticalStacked(svg, labels, rows) {
+      const width = 1000;
+      const height = 430;
+      const margin = { top: 20, right: 30, bottom: 55, left: 60 };
+      const plotW = width - margin.left - margin.right;
+      const plotH = height - margin.top - margin.bottom;
+      const maxY = 12;
+      const barW = 140;
+      const gap = (plotW - barW * labels.length) / (labels.length + 1);
+
+      let html = '';
+      html += `<rect x="0" y="0" width="${width}" height="${height}" fill="white" rx="16"></rect>`;
+
+      for (let i = 0; i <= maxY; i++) {
+        const y = margin.top + plotH - (i / maxY) * plotH;
+        html += `<line x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}" stroke="#e2e8f0" stroke-dasharray="4 4"/>`;
+        html += `<text x="${margin.left - 12}" y="${y + 4}" text-anchor="end" font-size="12" fill="#64748b">${i}</text>`;
+      }
+      html += `<line x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${margin.top + plotH}" stroke="#64748b"/>`;
+      html += `<line x1="${margin.left}" y1="${margin.top + plotH}" x2="${width - margin.right}" y2="${margin.top + plotH}" stroke="#64748b"/>`;
+
+      labels.forEach((label, idx) => {
+        const x = margin.left + gap + idx * (barW + gap);
+        let stackIndex = 0;
+        let selectedItems = [];
+
+        for (let spoon = 1; spoon <= 12; spoon++) {
+          const isO = rows[spoon - 1][label] === true;
+          if (!isO) continue;
+          const segH = plotH / 12;
+          const y = margin.top + plotH - (stackIndex + 1) * segH;
+          const color = SPOON_COLORS[spoon - 1];
+          html += `<rect class="hover-rect" data-title="${escapeHtml(label)}" data-body="${escapeHtml(spoon + '회: O')}" x="${x}" y="${y}" width="${barW}" height="${segH}" fill="${color}" stroke="white"/>`;
+          selectedItems.push(`${spoon}회: O`);
+          stackIndex++;
+        }
+        html += `<text x="${x + barW / 2}" y="${margin.top + plotH + 24}" text-anchor="middle" font-size="14" fill="#334155">${label}</text>`;
+        html += `<text x="${x + barW / 2}" y="${margin.top + plotH - stackIndex * (plotH / 12) - 8}" text-anchor="middle" font-size="13" fill="#334155" font-weight="700">${stackIndex}</text>`;
+      });
+
+      svg.innerHTML = html;
+      svg.querySelectorAll('.hover-rect').forEach(rect => {
+        const title = rect.dataset.title;
+        const body = rect.dataset.body;
+        attachRectTooltip(rect, title, body);
+      });
+    }
+
+    function renderHorizontalStacked(svg, labels, rows) {
+      const width = 1000;
+      const height = 430;
+      const margin = { top: 20, right: 35, bottom: 45, left: 120 };
+      const plotW = width - margin.left - margin.right;
+      const plotH = height - margin.top - margin.bottom;
+      const maxX = 12;
+      const barH = 72;
+      const gap = (plotH - barH * labels.length) / (labels.length + 1);
+
+      let html = '';
+      html += `<rect x="0" y="0" width="${width}" height="${height}" fill="white" rx="16"></rect>`;
+
+      for (let i = 0; i <= maxX; i++) {
+        const x = margin.left + (i / maxX) * plotW;
+        html += `<line x1="${x}" y1="${margin.top}" x2="${x}" y2="${margin.top + plotH}" stroke="#e2e8f0" stroke-dasharray="4 4"/>`;
+        html += `<text x="${x}" y="${margin.top + plotH + 20}" text-anchor="middle" font-size="12" fill="#64748b">${i}</text>`;
+      }
+      html += `<line x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${margin.top + plotH}" stroke="#64748b"/>`;
+      html += `<line x1="${margin.left}" y1="${margin.top + plotH}" x2="${width - margin.right}" y2="${margin.top + plotH}" stroke="#64748b"/>`;
+
+      labels.forEach((label, idx) => {
+        const y = margin.top + gap + idx * (barH + gap);
+        let stackIndex = 0;
+
+        for (let spoon = 1; spoon <= 12; spoon++) {
+          const isO = rows[spoon - 1][label] === true;
+          if (!isO) continue;
+          const segW = plotW / 12;
+          const x = margin.left + stackIndex * segW;
+          const color = SPOON_COLORS[spoon - 1];
+          html += `<rect class="hover-rect" data-title="${escapeHtml(label)}" data-body="${escapeHtml(spoon + '회: O')}" x="${x}" y="${y}" width="${segW}" height="${barH}" fill="${color}" stroke="white"/>`;
+          stackIndex++;
+        }
+        html += `<text x="${margin.left - 14}" y="${y + barH / 2 + 5}" text-anchor="end" font-size="15" fill="#334155">${label}</text>`;
+        html += `<text x="${margin.left + stackIndex * (plotW / 12) + 8}" y="${y + barH / 2 + 5}" font-size="13" fill="#334155" font-weight="700">${stackIndex}</text>`;
+      });
+
+      svg.innerHTML = html;
+      svg.querySelectorAll('.hover-rect').forEach(rect => {
+        const title = rect.dataset.title;
+        const body = rect.dataset.body;
+        attachRectTooltip(rect, title, body);
+      });
+    }
+
+    function renderCounts(container, labels, rows) {
+      container.innerHTML = labels.map(label => {
+        const count = rows.filter(r => r[label] === true).length;
+        return `
+          <div class="count-card">
+            <div class="name">${label}</div>
+            <div class="num">${count}</div>
+            <div class="unit">회 용해</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderLegend(container) {
+      container.innerHTML = SPOONS.map((spoon, idx) => `
+        <div class="legend-item">
+          <span class="swatch" style="background:${SPOON_COLORS[idx]}"></span>
+          <span>${spoon}회</span>
+        </div>
+      `).join('');
+    }
+
+    function renderAll() {
+      renderKindTable();
+      renderTempTable();
+      renderVerticalStacked(kindChart, SOLUTES, kindRows);
+      renderHorizontalStacked(tempChart, TEMPS, tempRows);
+      renderCounts(kindCounts, SOLUTES, kindRows);
+      renderCounts(tempCounts, TEMPS, tempRows);
+      const name = soluteNameInput.value.trim() || '용질';
+      tempChartSub.textContent = `1페이지와 다른 형태의 가로 누적 막대그래프입니다. ${name}의 온도별 용해 횟수를 확인할 수 있습니다.`;
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach((b) => {
+        b.classList.toggle('active', b.dataset.tab === tabId);
+      });
+      document.querySelectorAll('.page').forEach((page) => {
+        const active = page.id === tabId;
+        page.classList.toggle('active', active);
+        page.hidden = !active;
+        page.style.display = active ? 'grid' : 'none';
+      });
+    }
+
+    document.querySelectorAll('.tab-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        switchTab(btn.dataset.tab);
+      });
+    });
+
+    document.getElementById('resetPage1').addEventListener('click', () => {
+      kindRows = makeBlankKindRows();
+      renderAll();
+    });
+    document.getElementById('resetPage2').addEventListener('click', () => {
+      tempRows = makeBlankTempRows();
+      renderAll();
+    });
+    soluteNameInput.addEventListener('input', renderAll);
+
+    renderLegend(legendGrid1);
+    renderLegend(legendGrid2);
+    renderAll();
+    switchTab('page1');
+  </script>
+</body>
+</html>
